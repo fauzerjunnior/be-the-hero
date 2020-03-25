@@ -45,6 +45,22 @@ export default function Profile() {
         history.push('/');
     }
 
+    async function handleDeleteOng() {
+        if (window.confirm('Você tem certeza que deseja excluir o seu usuário?')) {
+            try {
+                await api.delete(`ongs`, {
+                    headers: {
+                        Authorization: ongId
+                    }
+                });
+
+                history.push('/');
+            } catch(err) {
+                alert('Erro ao deletar, tente novamente');
+            }
+        }
+    }
+
     return (
         <div className="profile-container">
             <header>
@@ -54,6 +70,9 @@ export default function Profile() {
                 <Link className="button" to="/incidents/new">Cadastrar novo caso</Link>
                 <button type="button" onClick={handleLogout}>
                     <FiPower  size={18} color="e02041"></FiPower>
+                </button>
+                <button className="dropdown" type="button" onClick={handleDeleteOng}>
+                    <FiTrash2  size={18} color="e02041"></FiTrash2>
                 </button>
             </header>
 
