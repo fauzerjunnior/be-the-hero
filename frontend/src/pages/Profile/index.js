@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiPower, FiTrash2 } from 'react-icons/fi';
+import swal from 'sweetalert';
 
 import api from '../../services/api';
 
@@ -12,6 +13,8 @@ export default function Profile() {
     const history = useHistory();
     const [incidents, setIncidents] = useState([]);
 
+    const [ResultLabel, setResultLabel] = useState('');
+
     const ongId = localStorage.getItem('ongId');
     const ongName = localStorage.getItem('ongName');
 
@@ -22,6 +25,12 @@ export default function Profile() {
             }
         }).then(response => {
             setIncidents(response.data);
+
+            if(response.data.length !== 0 && response.data !== null && response.data !== 'undefined') { 
+                setResultLabel('Casos encontrados');
+            } else {
+                setResultLabel('Nenhum caso encontrado');
+            }
         })
     }, [ongId]);
 
@@ -46,19 +55,36 @@ export default function Profile() {
     }
 
     async function handleDeleteOng() {
-        if (window.confirm('Você tem certeza que deseja excluir o seu usuário?')) {
-            try {
+        try{
+            let result = await swal({
+                title: 'Você tem certeza?',
+                text: 'Se você remover a sua ONG, não poderá mais recuperá-la!',
+                icon: 'warning',
+                buttons: ['Não remover', true],
+                dangerMode: true,
+            });
+            
+            // SUCCESS
+            if (result) {
                 await api.delete(`ongs`, {
                     headers: {
                         Authorization: ongId
                     }
                 });
 
-                history.push('/');
-            } catch(err) {
-                alert('Erro ao deletar, tente novamente');
+                swal('Pronto! A sua ONG foi removida!', {
+                    icon: "success",
+                    buttons: false,
+                    timer: 2000
+                });
+
+                setTimeout(() => history.push('/'), 2000);
             }
-        }
+          } catch(err) {
+            swal('Erro ao deletar, tente novamente', {
+                icon: "error"
+            });
+          }
     }
 
     return (
@@ -74,9 +100,9 @@ export default function Profile() {
                 <button className="dropdown" type="button" onClick={handleDeleteOng}>
                     <FiTrash2  size={18} color="e02041"></FiTrash2>
                 </button>
-            </header>
-
-            <h1>Casos Cadastrados</h1>
+            </header>   
+    
+            <h1>{ ResultLabel }</h1>
 
             <ul>
                 {incidents.map(incident => (

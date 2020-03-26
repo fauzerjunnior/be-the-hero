@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+import swal from 'sweetalert';
 
 import api from '../../services/api';
 import './styles.css';
@@ -24,13 +25,31 @@ export default function Register() {
             name, email, whatsapp, city, uf
         };
 
-        try {
-            const response = await api.post('/ongs', data);
-            alert(`Seu ID de acesso: ${response.data.id}`);
+        try {   
 
-            history.push('/');
+            if (name !== '', email !== '', whatsapp !== '', city !== '', uf !== '') {
+                const response = await api.post('/ongs', data);
+            
+                swal({
+                    title: "Bom trabalho!",
+                    text: `Seu ID de acesso: ${response.data.id}`,
+                    icon: "success",
+                });
+
+                history.push('/');
+            } else {
+                swal({
+                    title: "Ops!",
+                    text: 'Preencha os campos corretamente',
+                    icon: "error",
+                });
+            }
         } catch(err) {
-            alert('Erro no cadastro, tente novamente.');
+            swal({
+                title: "Ops!",
+                text: 'Houve um erro no cadastro, tente novamente.',
+                icon: "error",
+            });
         }
     }
 
@@ -44,7 +63,7 @@ export default function Register() {
                 
                     <Link className="back-link" to="/">
                         <FiArrowLeft size={16} color="#e02041"/> 
-                        Não tenho cadastro
+                        Voltar para o logon
                     </Link>
                 </section>
                 <form onSubmit={handleRegister}>
@@ -56,7 +75,7 @@ export default function Register() {
                     <input 
                         type="email" 
                         placeholder="Email" 
-                        value={email} 
+                        value={email}   
                         onChange={e => setEmail(e.target.value)} />
                     <input 
                         type="tel" 

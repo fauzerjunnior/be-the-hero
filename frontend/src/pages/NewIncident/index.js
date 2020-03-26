@@ -1,6 +1,7 @@
 import React, { useState} from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
+import swal from 'sweetalert';
 
 import api from '../../services/api';
 
@@ -31,10 +32,18 @@ export default function NewIncident() {
                 }
             });
 
-            alert('Novo caso cadastrado com sucesso');
-            history.push('/profile');
+            swal('Novo caso cadastrado com sucesso', {
+                icon: "success",
+                buttons: false,
+                timer: 2000
+            });
+
+            setTimeout(() => history.push('/profile'), 2000);
         } catch(err) {
-            alert('Erro no cadastro, tente novamente');
+            swal('Erro no cadastro, tente novamente', {
+                icon: "error",
+                buttons: false
+            });
         }
     }
 
